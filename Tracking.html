@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Orders Page Replica</title>
+    <style>
+        /* CSS Reset & Variables */
+        :root {
+            --nav-bg-dark: #131921;
+            --nav-bg-light: #232f3e;
+            --link-blue: #007185;
+            --link-blue-hover: #c40000;
+            --text-dark: #0f1111;
+            --text-muted: #565959;
+            --border-color: #d5d9d9;
+            --amazon-orange: #e47911;
+            --btn-yellow-bg: #ffd814;
+            --btn-yellow-border: #fcd200;
+            --btn-white-hover: #f7fafa;
+            --success-green: #007600;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: var(--text-dark);
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--link-blue);
+        }
+
+        a:hover {
+            color: var(--link-blue-hover);
+            text-decoration: underline;
+        }
+
+        /* --- Global Header (Navbars) --- */
+        .navbar-main {
+            background-color: var(--nav-bg-dark);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .nav-logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: -5px;
+        }
+        .nav-logo span { color: var(--amazon-orange); }
+
+        .nav-location {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .nav-location .line-1 { font-size: 12px; color: #ccc; }
+        .nav-location .line-2 { font-weight: bold; }
+
+        .nav-search {
+            display: flex;
+            flex-grow: 1;
+            height: 40px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .nav-search select {
+            background: #f3f3f3;
+            border: 1px solid #cdcdcd;
+            border-right: none;
+            padding: 0 10px;
+            color: #555;
+            cursor: pointer;
+            border-radius: 4px 0 0 4px;
+        }
+        .nav-search input {
+            flex-grow: 1;
+            border: none;
+            padding: 0 10px;
+            outline: none;
+        }
+        .nav-search button {
+            background: #febd69;
+            border: none;
+            width: 45px;
+            cursor: pointer;
+            border-radius: 0 4px 4px 0;
+            font-size: 18px;
+        }
+
+        .nav-tools {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-tool-item {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            cursor: pointer;
+        }
+        .nav-tool-item .line-1 { font-size: 12px; color: #fff; }
+        .nav-tool-item .line-2 { font-weight: bold; color: #fff; }
+
+        .navbar-sub {
+            background-color: var(--nav-bg-light);
+            color: white;
+            display: flex;
+            padding: 8px 20px;
+            gap: 15px;
+            font-size: 14px;
+        }
+        .navbar-sub div { cursor: pointer; }
+
+        /* --- Main Content Container --- */
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .breadcrumbs {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 400;
+        }
+        
+        .search-orders-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .search-orders-container input {
+            padding: 8px 10px;
+            width: 250px;
+            border: 1px solid #888;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(15,17,17,.15) inset;
+        }
+        .search-orders-container button {
+            background-color: var(--text-dark);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 100px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* --- Tabs --- */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--link-blue);
+        }
+        .tab.active {
+            color: var(--text-dark);
+            font-weight: bold;
+            border-bottom: 2px solid var(--amazon-orange);
+            pointer-events: none;
+        }
+
+        /* --- Order Card --- */
+        .order-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .order-header {
+            background-color: #f0f2f2;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+        .header-left {
+            display: flex;
+            gap: 40px;
+        }
+        .header-col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .header-label {
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .header-value {
+            color: var(--text-dark);
+            font-size: 14px;
+        }
+        .header-right {
+            text-align: right;
+        }
+        
+        /* --- Order Body --- */
+        .order-body {
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            background-color: white;
+        }
+
+        .order-info-section {
+            flex-grow: 1;
+        }
+        .delivery-status {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--success-green);
+            margin-bottom: 15px;
+        }
+
+        .product-row {
+            display: flex;
+            gap: 20px;
+        }
+        .product-img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+        }
+        .product-details {
+            max-width: 400px;
+        }
+        .product-title {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .btn-buy-again-small {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(15,17,17,.05);
+        }
+
+        /* --- Order Action Buttons (Right side) --- */
+        .order-actions {
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 100px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+        .btn-yellow {
+            background-color: var(--btn-yellow-bg);
+            border: 1px solid var(--btn-yellow-border);
+            box-shadow: 0 2px 5px rgba(213,217,217,.5);
+        }
+        .btn-yellow:hover {
+            background-color: #f7ca00;
+        }
+        .btn-white {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px rgba(15,17,17,.05);
+        }
+        .btn-white:hover {
+            background-color: var(--btn-white-hover);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Dark Navy Navbar -->
+    <header class="navbar-main">
+        <div class="nav-logo">amazon.in</div>
+        <div class="nav-location">
+            <span class="line-1">Delivering to Harshit</span>
+            <span class="line-2">Update location</span>
+        </div>
+        <div class="nav-search">
+            <select><option>All</option></select>
+            <input type="text" placeholder="Search Amazon.in">
+            <button>&#128269;</button> <!-- Magnifying glass icon -->
+        </div>
+        <div class="nav-tools">
+            <div class="nav-tool-item">
+                <span class="line-1">Hello, Harshit</span>
+                <span class="line-2">Account & Lists &#9662;</span>
+            </div>
+            <div class="nav-tool-item">
+                <span class="line-1">Returns</span>
+                <span class="line-2">& Orders</span>
+            </div>
+            <div class="nav-tool-item" style="flex-direction: row; align-items: flex-end; font-weight: bold;">
+                &#128164; Cart
+            </div>
+        </div>
+    </header>
+
+    <!-- Secondary Navbar -->
+    <nav class="navbar-sub">
+        <div style="font-weight:bold;">&#9776; All</div>
+        <div>Rufus</div>
+        <div>Fresh</div>
+        <div>MX Player</div>
+        <div>Sell</div>
+        <div>Gift Cards</div>
+        <div>Amazon Pay</div>
+        <div>Buy Again</div>
+        <div>Prime &#9662;</div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="container">
+        
+        <div class="breadcrumbs">
+            <a href="#">Your Account</a> > <span style="color:var(--amazon-orange)">Your Orders</span>
+        </div>
+
+        <div class="page-header">
+            <h1>Your Orders</h1>
+            <div class="search-orders-container">
+                <input type="text" placeholder="Search all orders">
+                <button>Search Orders</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active">Orders</div>
+            <div class="tab">Buy Again</div>
+            <div class="tab">Not Yet Shipped</div>
+        </div>
+
+        <!-- Single Order Card -->
+        <div class="order-card">
+            
+            <!-- Gray Header Section -->
+            <div class="order-header">
+                <div class="header-left">
+                    <div class="header-col">
+                        <span class="header-label">Order Placed</span>
+                        <span class="header-value">22 March 2026</span>
+                    </div>
+                    <div class="header-col">
+                        <span class="header-label">Total</span>
+                        <span class="header-value">₹1,013.00</span>
+                    </div>
+                    <div class="header-col">
+                        <span class="header-label">Ship To</span>
+                        <span class="header-value"><a href="#">Harshita &#9662;</a></span>
+                    </div>
+                </div>
+                <div class="header-col header-right">
+                    <span class="header-label">Order # 407-6545632-4202745</span>
+                    <span class="header-value">
+                        <a href="#">View order details</a> | <a href="#">Invoice &#9662;</a>
+                    </span>
+                </div>
+            </div>
+
+            <!-- White Body Section -->
+            <div class="order-body">
+                
+                <div class="order-info-section">
+                    <div class="delivery-status">Arriving tomorrow 7 am – 12 pm</div>
+                    
+                    <div class="product-row">
+                        <!-- Using a placeholder image -->
+                        <img src="hair.jpeg" alt="Hair Dryer" class="product-img">
+                        <div class="product-details">
+                            <a href="#" class="product-title">Havells HD3151 1200 W Foldable Hair Dryer; Turquoise</a>
+                            <button class="btn-buy-again-small">&#8635; Buy it again</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side Action Buttons -->
+                <div class="order-actions">
+                    <a href="#" class="btn btn-yellow">Track package</a>
+                    <a href="#" class="btn btn-white">View or edit order</a>
+                    <a href="#" class="btn btn-white">Write a product review</a>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>
